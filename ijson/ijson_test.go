@@ -2,6 +2,7 @@ package ijson
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -38,4 +39,145 @@ func TestStringToObj(t *testing.T) {
 	obj5, err := Convert[*User](u)
 	fmt.Println("obj5", ObjToString(obj5), err)
 
+}
+
+func TestStringToObj1(t *testing.T) {
+	type args struct {
+		jsonStr string
+	}
+	type testCase[T any] struct {
+		name    string
+		args    args
+		want    T
+		wantErr bool
+	}
+	tests := []testCase[User]{
+		{name: "", args: args{jsonStr: ""}, want: User{}, wantErr: true},
+		{name: "", args: args{jsonStr: "{}"}, want: User{}, wantErr: false},
+		{name: "", args: args{jsonStr: `{"age":"23"}`}, want: User{}, wantErr: true},
+		{name: "", args: args{jsonStr: "[]"}, want: User{}, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := StringToObj[User](tt.args.jsonStr)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("StringToObj() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("StringToObj() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStringToObj2(t *testing.T) {
+	type args struct {
+		jsonStr string
+	}
+	type testCase[T any] struct {
+		name    string
+		args    args
+		want    T
+		wantErr bool
+	}
+	tests := []testCase[*User]{
+		{name: "", args: args{jsonStr: ""}, want: nil, wantErr: true},
+		{name: "", args: args{jsonStr: "{}"}, want: &User{}, wantErr: false},
+		{name: "", args: args{jsonStr: `{"age":"sdfj"}`}, want: &User{}, wantErr: true},
+		{name: "", args: args{jsonStr: "[]"}, want: &User{}, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := StringToObj[*User](tt.args.jsonStr)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("StringToObj() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("StringToObj() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStringToObj3(t *testing.T) {
+	type args struct {
+		jsonStr string
+	}
+	type testCase[T any] struct {
+		name    string
+		args    args
+		want    T
+		wantErr bool
+	}
+	tests := []testCase[map[string]any]{
+		{name: "", args: args{jsonStr: ""}, want: nil, wantErr: true},
+		{name: "", args: args{jsonStr: "{}"}, want: map[string]any{}, wantErr: false},
+		{name: "", args: args{jsonStr: `{"age":"sdfj"}`}, want: map[string]any{"age": "sdfj"}, wantErr: false},
+		{name: "", args: args{jsonStr: "[]"}, want: nil, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := StringToObj[map[string]any](tt.args.jsonStr)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("StringToObj() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("StringToObj() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStringToObj4(t *testing.T) {
+	type args struct {
+		jsonStr string
+	}
+	type testCase[T any] struct {
+		name    string
+		args    args
+		want    T
+		wantErr bool
+	}
+	tests := []testCase[[]*User]{
+		{name: "", args: args{jsonStr: ""}, want: nil, wantErr: true},
+		{name: "", args: args{jsonStr: "{}"}, want: nil, wantErr: true},
+		{name: "", args: args{jsonStr: `{"age":"sdfj"}`}, want: nil, wantErr: true},
+		{name: "", args: args{jsonStr: "[]"}, want: []*User{}, wantErr: false},
+		{name: "", args: args{jsonStr: `[{"age":"234"}]`}, want: []*User{&User{}}, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := StringToObj[[]*User](tt.args.jsonStr)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("StringToObj() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("StringToObj() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestObjToBytes(t *testing.T) {
+	type args struct {
+		v interface{}
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{name: "", args: args{v: nil}, want: []byte{'n', 'u', 'l', 'l'}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ObjToBytes(tt.args.v); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ObjToBytes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
