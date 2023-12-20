@@ -2,6 +2,7 @@ package istr
 
 import (
 	"strings"
+	"unicode"
 	"unsafe"
 )
 
@@ -18,4 +19,13 @@ func IsEmpty(str string) bool {
 
 func IsNotEmpty(str string) bool {
 	return !IsEmpty(str)
+}
+
+func IsContainsChinese(str string) bool {
+	for _, r := range str {
+		if unicode.Is(unicode.Han, r) {
+			return true
+		}
+	}
+	return false
 }

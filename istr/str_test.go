@@ -16,3 +16,10 @@ func TestStringToByteSlice(t *testing.T) {
 	ss[1] = 's'
 	fmt.Printf("%s\n", ss)
 }
+
+func TestIsChinese(t *testing.T) {
+	fmt.Println(IsContainsChinese("jj12"))
+	fmt.Println(IsContainsChinese("j我j12"))
+	fmt.Println(IsContainsChinese("j孓j12"))
+	fmt.Println(IsContainsChinese("j亻j12"))
+}
