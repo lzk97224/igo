@@ -48,18 +48,24 @@ func EquallyDivide[T any](size int, arr []T) [][]T {
 	return result
 }
 
-func ToMap[T any, K comparable, V any](data []T, k func(T) K, v func(T) V) map[K]V {
+func ToMap[T any, K comparable, V any](data []T, t2k func(T) K, t2v func(T) V) map[K]V {
 	result := make(map[K]V)
 	for _, item := range data {
-		result[k(item)] = v(item)
+		result[t2k(item)] = t2v(item)
 	}
 	return result
 }
 
-func GroupToMap[T any, K comparable](data []T, k func(T) K) map[K][]T {
+func ToMapByKey[T any, K comparable](data []T, t2k func(T) K) map[K]T {
+	return ToMap(data, t2k, func(t T) T {
+		return t
+	})
+}
+
+func GroupToMap[T any, K comparable](data []T, t2k func(T) K) map[K][]T {
 	result := make(map[K][]T)
 	for _, item := range data {
-		key := k(item)
+		key := t2k(item)
 		if _, ok := result[key]; !ok {
 			result[key] = make([]T, 0)
 		}
@@ -72,6 +78,17 @@ func ToNewSlice[T any, NT any](data []T, fun func(T) NT) []NT {
 	result := make([]NT, 0)
 	for _, item := range data {
 		result = append(result, fun(item))
+	}
+	return result
+}
+
+func SortByKeySlice[T any, K comparable](data []T, keySlice []K, t2k func(T) K) []T {
+	result := make([]T, 0)
+	mapByKey := ToMapByKey(data, t2k)
+	for _, k := range keySlice {
+		if t1, ok := mapByKey[k]; ok {
+			result = append(result, t1)
+		}
 	}
 	return result
 }
