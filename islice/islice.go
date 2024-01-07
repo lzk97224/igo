@@ -1,5 +1,7 @@
 package islice
 
+import "sort"
+
 func IsEmpty[T any](t []T) bool {
 	return len(t) <= 0
 }
@@ -83,12 +85,25 @@ func ToNewSlice[T any, NT any](data []T, fun func(T) NT) []NT {
 }
 
 func SortByKeySlice[T any, K comparable](data []T, keySlice []K, t2k func(T) K) []T {
-	result := make([]T, 0)
-	mapByKey := ToMapByKey(data, t2k)
-	for _, k := range keySlice {
-		if t1, ok := mapByKey[k]; ok {
-			result = append(result, t1)
+	//result := make([]T, 0)
+	//mapByKey := ToMapByKey(data, t2k)
+
+	keySliceIndexMap := map[K]int{}
+	for index, k := range keySlice {
+		if _, ok := keySliceIndexMap[k]; !ok {
+			keySliceIndexMap[k] = index
 		}
 	}
-	return result
+
+	sort.Slice(data, func(i, j int) bool {
+		return keySliceIndexMap[t2k(data[i])] < keySliceIndexMap[t2k(data[j])]
+	})
+
+	return data
+	//for _, k := range keySlice {
+	//	if t1, ok := mapByKey[k]; ok {
+	//		result = append(result, t1)
+	//	}
+	//}
+	//return result
 }
