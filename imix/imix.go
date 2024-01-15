@@ -27,3 +27,12 @@ func SimpleRetry[T any](do func() (data T, ok bool), maxTimes int) (result T, er
 	var t T
 	return t, errors.New("SimpleRetry all fail")
 }
+
+// If 三目运算
+func If[T any](con bool, one, another T) T {
+	if con {
+		return one
+	} else {
+		return another
+	}
+}
