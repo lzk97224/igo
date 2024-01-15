@@ -1,6 +1,9 @@
 package islice
 
-import "sort"
+import (
+	"reflect"
+	"sort"
+)
 
 func IsEmpty[T any](t []T) bool {
 	return len(t) <= 0
@@ -106,4 +109,13 @@ func SortByKeySlice[T any, K comparable](data []T, keySlice []K, t2k func(T) K) 
 	//	}
 	//}
 	//return result
+}
+
+func IsContain[T any](data []T, value T) bool {
+	for _, item := range data {
+		if reflect.DeepEqual(item, value) {
+			return true
+		}
+	}
+	return false
 }

@@ -39,3 +39,21 @@ func TestToMap(t *testing.T) {
 	})
 	fmt.Println(toMap)
 }
+
+func TestIsContain(t *testing.T) {
+	list := []*People{
+		{Age: 1, Name: "3"},
+	}
+	list2 := []int{1, 2}
+	fmt.Println(IsContain(list, &People{
+		Age: 1, Name: "3",
+	}))
+
+	fmt.Println(IsContain(list2, 1))
+
+	fmt.Println(IsContain(list, &People{
+		Age: 1, Name: "4",
+	}))
+
+	fmt.Println(IsContain(list2, 3))
+}
