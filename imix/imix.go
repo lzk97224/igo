@@ -1,7 +1,7 @@
 package imix
 
 import (
-	"errors"
+	"fmt"
 	"log"
 )
 
@@ -16,16 +16,16 @@ import (
 //
 //	result: 对应do函数的返回值
 //	err: 代表最终结果是否成功
-func SimpleRetry[T any](do func() (data T, ok bool), maxTimes int) (result T, err error) {
+func SimpleRetry[T any](do func() (data T, err error), maxTimes int) (result T, err error) {
 	for i := 0; i < maxTimes; i++ {
 		log.Printf("do,times :%v\n", i+1)
-		data, ok := do()
-		if ok {
-			return data, nil
+		result, err = do()
+		if err == nil {
+			return result, nil
 		}
 	}
 	var t T
-	return t, errors.New("SimpleRetry all fail")
+	return t, fmt.Errorf("SimpleRetry all fail:%w", err)
 }
 
 // If 三目运算
