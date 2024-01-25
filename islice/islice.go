@@ -119,3 +119,13 @@ func IsContain[T any](data []T, value T) bool {
 	}
 	return false
 }
+
+func FindOne[T any](data []T, fun func(T) bool) (T, bool) {
+	for _, item := range data {
+		if fun(item) {
+			return item, true
+		}
+	}
+	var t T
+	return t, false
+}
