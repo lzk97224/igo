@@ -1,6 +1,8 @@
 package imix
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"log"
 )
@@ -35,4 +37,16 @@ func If[T any](con bool, one, another T) T {
 	} else {
 		return another
 	}
+}
+
+func DeepCopy[T any](src T) (T, error) {
+	var buf bytes.Buffer
+	var dst T
+	if err := gob.NewEncoder(&buf).Encode(src); err != nil {
+		return dst, err
+	}
+
+	err := gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(&dst)
+
+	return dst, err
 }

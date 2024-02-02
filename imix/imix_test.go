@@ -58,3 +58,36 @@ func TestSimpleRetry(t *testing.T) {
 		fmt.Println(fmt.Errorf("翻译提示词失败,%w", err))
 	}
 }
+
+type People struct {
+	Age    int
+	Name   string
+	Tag    []string
+	Friend []People
+	Enemy  []*People
+}
+
+func TestDeepCopy(t *testing.T) {
+	i := 1
+	pi := &i
+	ic, err := DeepCopy(pi)
+	fmt.Println(ic, err)
+
+	ic2, err := DeepCopy(i)
+	fmt.Println(ic2, err)
+
+	p := &People{
+		Age:    1,
+		Name:   "lzk",
+		Tag:    []string{"1", "2"},
+		Friend: []People{{Age: 2, Name: "lzk1"}},
+		Enemy:  []*People{{Age: 3, Name: "lzk2"}},
+	}
+
+	p1, err := DeepCopy(p)
+	fmt.Println(p1, err)
+
+	p2, err := DeepCopy(*p)
+	fmt.Println(p2, err)
+
+}
