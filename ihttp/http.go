@@ -1,6 +1,7 @@
 package ihttp
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
 )
@@ -13,6 +14,9 @@ func checkResult[T any](res *resty.Response, err error, result T) (*resty.Respon
 	}
 	if !res.IsSuccess() {
 		return res, result, fmt.Errorf("request fail code:%v,msg:%v", res.StatusCode(), res.String())
+	}
+	if res.RawResponse.Header.Get("Content-Type") == "text/plain" {
+		err = json.Unmarshal(res.Body(), result)
 	}
 	return res, result, nil
 }
