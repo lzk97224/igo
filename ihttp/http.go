@@ -4,9 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
+	"time"
 )
 
 var defaultClient = resty.New()
+
+func init() {
+	defaultClient.SetTimeout(time.Second * 10)
+}
 
 func checkResult[T any](res *resty.Response, err error, result T) (*resty.Response, T, error) {
 	if err != nil {
