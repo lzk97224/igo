@@ -1,6 +1,7 @@
 package iperfor
 
 import (
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
@@ -55,7 +56,12 @@ func (p *Perfor) Print() {
 		log.Infof("---------------%v---------------", name)
 		log.Infof("[性能测试][%v][开始时间]%v", name, p.timeMap[name].Begin)
 		log.Infof("[性能测试][%v][结束时间]%v", name, p.timeMap[name].End)
-		log.Infof("[性能测试][%v][耗时]%v", name, p.timeMap[name].End.Sub(p.timeMap[name].Begin))
+		duration := p.timeMap[name].End.Sub(p.timeMap[name].Begin)
+		durationFormat := "%v"
+		if duration > time.Millisecond*500 {
+			durationFormat = "\033[1;31m%v\033[0m"
+		}
+		log.Infof("[性能测试][%v][耗时]%v", name, fmt.Sprintf(durationFormat, duration))
 	}
 }
 
