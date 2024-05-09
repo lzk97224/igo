@@ -23,3 +23,9 @@ func TestIsChinese(t *testing.T) {
 	fmt.Println(IsContainsChinese("j孓j12"))
 	fmt.Println(IsContainsChinese("j亻j12"))
 }
+
+func TestContainsAny(t *testing.T) {
+	fmt.Println(ContainsAny("abc", "a"))
+	fmt.Println(ContainsAny("abc", "d", "e"))
+	fmt.Println(ContainsAny("abc", ""))
+}

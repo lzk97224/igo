@@ -29,3 +29,13 @@ func IsContainsChinese(str string) bool {
 	}
 	return false
 }
+
+func ContainsAny(str string, subList ...string) bool {
+	for _, s := range subList {
+		contains := strings.Contains(str, s)
+		if contains {
+			return true
+		}
+	}
+	return false
+}

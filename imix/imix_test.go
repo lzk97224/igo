@@ -18,6 +18,14 @@ func TestSimpleRetry(t *testing.T) {
 		t.Log(result, err)
 	}
 
+	result, err = SimpleRetryWithDelay(func() (data *http.Response, err error) {
+		resp, err := http.Get("http://google.com")
+		return resp, err
+	}, 3, time.Second*2)
+	if err != nil {
+		t.Log(result, err)
+	}
+
 	result, err = SimpleRetry(func() (data *http.Response, err error) {
 		resp, err := http.Get("http://baidu.com")
 		return resp, err

@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"log"
+	"time"
 )
 
 // SimpleRetry 一个简单的重试工具
@@ -18,16 +19,21 @@ import (
 //
 //	result: 对应do函数的返回值
 //	err: 代表最终结果是否成功
-func SimpleRetry[T any](do func() (data T, err error), maxTimes int) (result T, err error) {
+func SimpleRetryWithDelay[T any](do func() (data T, err error), maxTimes int, delay time.Duration) (result T, err error) {
 	for i := 0; i < maxTimes; i++ {
 		log.Printf("do,times :%v\n", i+1)
 		result, err = do()
 		if err == nil {
 			return result, nil
 		}
+		time.Sleep(delay)
 	}
 	var t T
 	return t, fmt.Errorf("SimpleRetry all fail:%w", err)
+}
+
+func SimpleRetry[T any](do func() (data T, err error), maxTimes int) (result T, err error) {
+	return SimpleRetryWithDelay(do, maxTimes, time.Millisecond*100)
 }
 
 // If 三目运算
@@ -36,6 +42,14 @@ func If[T any](con bool, one, another T) T {
 		return one
 	} else {
 		return another
+	}
+}
+
+func IfDelay[T any](con bool, one, another func() T) T {
+	if con {
+		return one()
+	} else {
+		return another()
 	}
 }
 
