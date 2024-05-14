@@ -2,7 +2,8 @@ package iperfor
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
+	"strings"
+	"sync"
 	"time"
 )
 
@@ -18,16 +19,22 @@ func DotBegin(name string) {
 func DotEnd(name string) {
 	defaultPerfor.DotEnd(name)
 }
-func Print() {
-	defaultPerfor.Print()
+func GetDot(name string) string {
+	return defaultPerfor.GetDot(name)
+}
+func Print() string {
+	return defaultPerfor.Print()
 }
 
 type Perfor struct {
 	nameList []string
 	timeMap  map[string]*timePair
+	lock     sync.Mutex
 }
 
 func (p *Perfor) DotBegin(name string) {
+	p.lock.Lock()
+	defer p.lock.Unlock()
 	if pair, ok := p.timeMap[name]; ok {
 		pair.Begin = time.Now()
 	} else {
@@ -51,18 +58,26 @@ func (p *Perfor) DotEnd(name string) {
 	}
 }
 
-func (p *Perfor) Print() {
-	for _, name := range p.nameList {
-		log.Infof("---------------%v---------------", name)
-		log.Infof("[性能测试][%v][开始时间]%v", name, p.timeMap[name].Begin)
-		log.Infof("[性能测试][%v][结束时间]%v", name, p.timeMap[name].End)
-		duration := p.timeMap[name].End.Sub(p.timeMap[name].Begin)
-		durationFormat := "%v"
-		if duration > time.Millisecond*500 {
-			durationFormat = "\033[1;31m%v\033[0m"
-		}
-		log.Infof("[性能测试][%v][耗时]%v", name, fmt.Sprintf(durationFormat, duration))
+func (p *Perfor) GetDot(name string) string {
+	strList := make([]string, 0, 4)
+	strList = append(strList, fmt.Sprintf("---------------%v---------------", name))
+	strList = append(strList, fmt.Sprintf("[性能测试][%v][开始时间]%v", name, p.timeMap[name].Begin))
+	strList = append(strList, fmt.Sprintf("[性能测试][%v][结束时间]%v", name, p.timeMap[name].End))
+	duration := p.timeMap[name].End.Sub(p.timeMap[name].Begin)
+	durationFormat := "%v"
+	if duration > time.Millisecond*500 {
+		durationFormat = "\033[1;31m%v\033[0m"
 	}
+	strList = append(strList, fmt.Sprintf("[性能测试][%v][耗时]%v", name, fmt.Sprintf(durationFormat, duration)))
+	return strings.Join(strList, "\n")
+}
+
+func (p *Perfor) Print() string {
+	strList := make([]string, 0, len(p.nameList))
+	for _, name := range p.nameList {
+		strList = append(strList, p.GetDot(name))
+	}
+	return strings.Join(strList, "\n")
 }
 
 func NewPerfor() *Perfor {
