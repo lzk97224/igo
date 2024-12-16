@@ -4,14 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-resty/resty/v2"
-	"time"
 )
 
-var defaultClient = resty.New()
-
-func init() {
-	defaultClient.SetTimeout(time.Second * 10)
-}
+var defaultClient = NewHttpClient(5, 5)
 
 func checkResult[T any](res *resty.Response, err error, result T) (*resty.Response, T, error) {
 	if err != nil {
@@ -26,35 +21,56 @@ func checkResult[T any](res *resty.Response, err error, result T) (*resty.Respon
 	return res, result, nil
 }
 
-func createReqWithoutBody[T any](headers map[string]string, queryParams map[string]string, result T) *resty.Request {
-	r := defaultClient.R()
+func createReqWithoutBody[T any](c *resty.Client, headers map[string]string, queryParams map[string]string, result T) *resty.Request {
+	r := c.R()
 	r.SetHeaders(headers)
 	r.SetQueryParams(queryParams)
 	r.SetResult(result)
 	return r
 }
 
-func createReqWithBody[T any](headers map[string]string, body any, result T) *resty.Request {
-	r := defaultClient.R()
+func createReqWithBody[T any](c *resty.Client, headers map[string]string, body any, result T) *resty.Request {
+	r := c.R()
 	r.SetHeaders(headers)
 	r.SetBody(body)
 	r.SetResult(result)
 	return r
 }
 
-func Get[T any](url string, headers map[string]string, queryParams map[string]string, result T) (*resty.Response, T, error) {
-	r := createReqWithoutBody(headers, queryParams, result)
+func GetWithClient[T any](c *resty.Client, url string, headers map[string]string, queryParams map[string]string, result T) (*resty.Response, T, error) {
+	r := createReqWithoutBody(c, headers, queryParams, result)
 	res, err := r.Get(url)
 	return checkResult(res, err, result)
 }
 
-func Post[T any](url string, headers map[string]string, body any, result T) (*resty.Response, T, error) {
-	r := createReqWithBody(headers, body, result)
+func PostWithClient[T any](c *resty.Client, url string, headers map[string]string, body any, result T) (*resty.Response, T, error) {
+	r := createReqWithBody(c, headers, body, result)
 	res, err := r.Post(url)
 	return checkResult(res, err, result)
 }
-func Put[T any](url string, headers map[string]string, body any, result T) (*resty.Response, T, error) {
-	r := createReqWithBody(headers, body, result)
+func PutWithClient[T any](c *resty.Client, url string, headers map[string]string, body any, result T) (*resty.Response, T, error) {
+	r := createReqWithBody(c, headers, body, result)
 	res, err := r.Put(url)
 	return checkResult(res, err, result)
+}
+
+func DelWithClient[T any](c *resty.Client, url string, headers map[string]string, body any, result T) (*resty.Response, T, error) {
+	r := createReqWithBody(c, headers, body, result)
+	res, err := r.Delete(url)
+	return checkResult(res, err, result)
+}
+
+func Get[T any](url string, headers map[string]string, queryParams map[string]string, result T) (*resty.Response, T, error) {
+	return GetWithClient(defaultClient, url, headers, queryParams, result)
+}
+
+func Post[T any](url string, headers map[string]string, body any, result T) (*resty.Response, T, error) {
+	return PostWithClient(defaultClient, url, headers, body, result)
+}
+func Put[T any](url string, headers map[string]string, body any, result T) (*resty.Response, T, error) {
+	return PutWithClient(defaultClient, url, headers, body, result)
+}
+
+func Del[T any](url string, headers map[string]string, body any, result T) (*resty.Response, T, error) {
+	return DelWithClient(defaultClient, url, headers, body, result)
 }

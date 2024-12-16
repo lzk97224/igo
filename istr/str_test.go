@@ -29,3 +29,20 @@ func TestContainsAny(t *testing.T) {
 	fmt.Println(ContainsAny("abc", "d", "e"))
 	fmt.Println(ContainsAny("abc", ""))
 }
+
+func Test_trunc(t *testing.T) {
+	fmt.Println(Trunc("12345", 0, 3))
+	fmt.Println(Trunc("12345", 1, 3))
+	fmt.Println(Trunc("12345", 2, 3))
+	fmt.Println(Trunc("12345", 3, 3))
+	fmt.Println(Trunc("12345", 4, 3))
+	fmt.Println(Trunc("12345", 5, 3))
+
+	fmt.Println(TruncLeft("12345", 3))
+	fmt.Println(TruncLeft("12345", 5))
+	fmt.Println(TruncLeft("12345", 6))
+
+	fmt.Println(TruncRight("12345", 3))
+	fmt.Println(TruncRight("12345", 5))
+	fmt.Println(TruncRight("12345", 6))
+}

@@ -39,3 +39,33 @@ func ContainsAny(str string, subList ...string) bool {
 	}
 	return false
 }
+
+func TruncRight(str string, maxLength int) string {
+	length := len(str)
+	if length > maxLength {
+		return str[0:maxLength]
+	} else {
+		return str
+	}
+}
+
+func TruncLeft(str string, maxLength int) string {
+	length := len(str)
+	if length > maxLength {
+		return str[length-maxLength:]
+	} else {
+		return str
+	}
+}
+
+func Trunc(str string, begin, maxLength int) string {
+	length := len(str)
+	if begin >= length {
+		return ""
+	}
+	if length > (maxLength + begin) {
+		return str[begin : begin+maxLength]
+	} else {
+		return str[begin:]
+	}
+}
