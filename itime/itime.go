@@ -41,7 +41,7 @@ func AddSecond(t time.Time, seconds int) time.Time {
 }
 
 func DateOnly(t time.Time) time.Time {
-	result, _ := time.Parse(time.DateOnly, t.Format(time.DateOnly))
+	result, _ := time.ParseInLocation(time.DateOnly, t.Format(time.DateOnly), time.Local)
 	return result
 }
 
